@@ -1,0 +1,435 @@
+/* Import de la police Roboto pour un rendu professionnel */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+
+/* Couleurs officielles France Hydrogène */
+:root {
+    --fh-blue: #03a3ff;
+    --fh-green: #88c000;
+    --fh-orange: #ff9e00;
+    --fh-dark-blue: #003a91;
+}
+
+/* Reset et styles de base */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Animations sobres et professionnelles */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Style des onglets Dash */
+.tab {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    border-radius: 0;
+    font-weight: 500;
+}
+
+.tab:hover {
+    background-color: #f0f0f0;
+}
+
+.tab--selected {
+    background: linear-gradient(135deg, var(--fh-green) 0%, var(--fh-blue) 100%) !important;
+    color: white !important;
+    border-bottom: 3px solid var(--fh-dark-blue) !important;
+}
+
+/* Style des cartes */
+.card {
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Style des checkboxes - Design professionnel avec couleurs FH */
+input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--fh-blue);
+}
+
+input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, var(--fh-green) 0%, var(--fh-blue) 100%);
+    border-color: var(--fh-blue);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Style des dropdowns */
+.Select-control {
+    border-radius: 4px !important;
+    border: 1px solid #d0d0d0 !important;
+    transition: border-color 0.2s ease !important;
+}
+
+.Select-control:hover {
+    border-color: var(--fh-blue) !important;
+}
+
+.Select-control.is-focused {
+    border-color: var(--fh-blue) !important;
+    box-shadow: 0 0 0 2px rgba(3, 163, 255, 0.1) !important;
+}
+
+/* Style des inputs */
+input[type="text"],
+input[type="number"] {
+    transition: border-color 0.2s ease;
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover {
+    border-color: var(--fh-blue) !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: var(--fh-blue) !important;
+    box-shadow: 0 0 0 2px rgba(3, 163, 255, 0.1) !important;
+}
+
+/* Style du bouton d'ajout avec dégradé FH */
+.add-button {
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-button:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(136, 192, 0, 0.4) !important;
+}
+
+.add-button:active {
+    transform: scale(0.98);
+}
+
+/* Style de la table */
+.dash-table-container {
+    border-radius: 4px !important;
+    overflow: hidden !important;
+}
+
+.dash-spreadsheet {
+    font-family: 'Roboto', sans-serif !important;
+}
+
+.dash-cell {
+    transition: background-color 0.15s ease !important;
+}
+
+.dash-cell:hover {
+    background-color: rgba(3, 163, 255, 0.05) !important;
+}
+
+.dash-header {
+    font-weight: 600 !important;
+    background-color: var(--fh-dark-blue) !important;
+    color: white !important;
+}
+
+/* Style de la scrollbar avec couleurs FH */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--fh-blue);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--fh-dark-blue);
+}
+
+/* Animation de chargement pour Cytoscape */
+#cytoscape {
+    transition: opacity 0.3s ease;
+}
+
+/* Effet de focus professionnel avec couleurs FH */
+*:focus-visible {
+    outline: 2px solid var(--fh-blue);
+    outline-offset: 2px;
+}
+
+/* Style pour les états désactivés */
+*:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legend-container {
+        position: relative !important;
+        width: 100% !important;
+        margin-top: 20px;
+    }
+}
+
+/* Typographie professionnelle */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--fh-dark-blue);
+}
+
+/* Liens avec couleurs FH */
+a {
+    color: var(--fh-blue);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--fh-dark-blue);
+    text-decoration: underline;
+}
+
+/* Sections de filtre */
+.filter-section {
+    transition: background-color 0.2s ease;
+}
+
+.filter-section:hover {
+    background-color: rgba(3, 163, 255, 0.02);
+}
+
+/* Badges et tags avec couleurs FH */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-blue {
+    background-color: var(--fh-blue);
+    color: white;
+}
+
+.badge-green {
+    background-color: var(--fh-green);
+    color: white;
+}
+
+.badge-orange {
+    background-color: var(--fh-orange);
+    color: white;
+}
+
+/* Messages et alertes avec couleurs FH */
+.alert {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    border-left: 4px solid;
+}
+
+.alert-info {
+    background-color: rgba(3, 163, 255, 0.1);
+    border-color: var(--fh-blue);
+    color: var(--fh-dark-blue);
+}
+
+.alert-success {
+    background-color: rgba(136, 192, 0, 0.1);
+    border-color: var(--fh-green);
+    color: #2e5f00;
+}
+
+.alert-warning {
+    background-color: rgba(255, 158, 0, 0.1);
+    border-color: var(--fh-orange);
+    color: #7f4f00;
+}
+
+/* Effet pour les éléments interactifs */
+.interactive-element {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.interactive-element:hover {
+    transform: translateY(-1px);
+}
+
+/* Ombres professionnelles */
+.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.shadow {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Grilles et layouts */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+
+.col {
+    flex: 1;
+    padding: 0 10px;
+}
+
+/* Transitions globales sobres */
+* {
+    transition-timing-function: ease;
+}
+
+/* États de chargement avec couleurs FH */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border: 3px solid rgba(3, 163, 255, 0.3);
+    border-top-color: var(--fh-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Amélioration de la lisibilité */
+p {
+    line-height: 1.6;
+    margin-bottom: 1em;
+}
+
+/* Espacement vertical cohérent */
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 32px; }
+
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mt-4 { margin-top: 32px; }
+
+/* Utilitaires de texte */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+.text-uppercase { text-transform: uppercase; }
+.text-capitalize { text-transform: capitalize; }
+
+.font-weight-normal { font-weight: 400; }
+.font-weight-medium { font-weight: 500; }
+.font-weight-bold { font-weight: 700; }
+
+/* Bordures avec couleurs FH */
+.border-blue { border-color: var(--fh-blue) !important; }
+.border-green { border-color: var(--fh-green) !important; }
+.border-orange { border-color: var(--fh-orange) !important; }
+.border-dark-blue { border-color: var(--fh-dark-blue) !important; }
+
+/* Backgrounds avec couleurs FH */
+.bg-blue { background-color: var(--fh-blue) !important; }
+.bg-green { background-color: var(--fh-green) !important; }
+.bg-orange { background-color: var(--fh-orange) !important; }
+.bg-dark-blue { background-color: var(--fh-dark-blue) !important; }
+
+/* Text colors */
+.text-blue { color: var(--fh-blue) !important; }
+.text-green { color: var(--fh-green) !important; }
+.text-orange { color: var(--fh-orange) !important; }
+.text-dark-blue { color: var(--fh-dark-blue) !important; }
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .shadow, .shadow-sm, .shadow-lg {
+        box-shadow: none !important;
+    }
+}
