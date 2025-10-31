@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 import subprocess
 import sys
 import time
+import os
 
 
 # Liste des utilisateurs autorisés
@@ -14,6 +15,7 @@ VALID_USERNAME_PASSWORD_PAIRS = {
 
 # Initialiser l'application Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server
 
 # Layout de la page de connexion
 app.layout = html.Div(id="page-content", children=[
@@ -80,4 +82,6 @@ def login(n_clicks, username, password):
     return dash.no_update, ""
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False, port=8050)
+    port = int(os.environ.get("PORT", 8050))
+    app.run_server(host="0.0.0.0", port=port, debug=False)
+
