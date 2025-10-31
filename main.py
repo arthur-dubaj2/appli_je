@@ -8,6 +8,7 @@ import utils
 from filtres_tab import filtres_tab 
 from maint_tab import main_tab
 import pandas as pd
+import os
 
 # Initialisation de l'application Dash avec le thème Bootstrap et styles personnalisés
 app = dash.Dash(
@@ -16,6 +17,9 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP],
     # Le fichier CSS dans assets/ sera automatiquement chargé
 )
+
+
+server = app.server
 
 # Définition du layout principal avec système d'onglets et stockage de données
 app.layout = html.Div([
@@ -525,6 +529,8 @@ def update_all_domains(pole1, pole2, pole3, dp1_current, dp2_current, dp3_curren
     return dp1, dp2, dp3, domaines1, domaines2, domaines3
 
 if __name__ == "__main__":
-    app.run(debug=True, port = 8051)
+    port = int(os.environ.get("PORT", 8051))
+    app.run_server(host="0.0.0.0", port=port, debug=False)
+
 
 
