@@ -1,5 +1,7 @@
 dash
+dash-cytoscape
 dash-bootstrap-components
 numpy
 pandas
 gunicorn
+
