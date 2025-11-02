@@ -6,5 +6,7 @@ networkx
 numpy
 pandas
 gunicorn
+openpyxl
+
 
 
