@@ -107,8 +107,8 @@ def display_node_info(mouseover_data):
         tooltip_style = {
             'display': 'block',
             'position': 'absolute',
-            'top': '5%',
-            'left': '10%',
+            'top': '0%',
+            'left': '13%',
             'transform': 'translateX(-50%)',
             'backgroundColor': 'rgba(44, 62, 80, 0.98)',
             'color': 'white',
