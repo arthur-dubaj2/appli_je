@@ -106,9 +106,9 @@ def display_node_info(mouseover_data):
         # Style de base pour l'info-bulle
         tooltip_style = {
             'display': 'block',
-            'position': 'fixed',
-            'top': '80px',
-            'left': '50%',
+            'position': 'absolute',
+            'top': '5%',
+            'left': '10%',
             'transform': 'translateX(-50%)',
             'backgroundColor': 'rgba(44, 62, 80, 0.98)',
             'color': 'white',
@@ -128,39 +128,16 @@ def display_node_info(mouseover_data):
             node_data = utils.df[utils.df['Nom'] == node_id].iloc[0]
             
             content = html.Div([
-                html.Div([
-                    html.Strong(node_label, style={
-                        'fontSize': '18px',
-                        'display': 'block',
-                        'marginBottom': '12px',
-                        'color': '#ecf0f1',
-                        'borderBottom': '2px solid #3498db',
-                        'paddingBottom': '8px'
-                    }),
-                ]),
-                html.Div([
-                    html.Div([
-                        html.Span('Nature : ', style={'fontWeight': '600', 'color': '#bdc3c7'}),
-                        html.Span(str(node_data['Nature']), style={'color': '#ecf0f1'})
-                    ], style={'marginBottom': '6px'}),
-                    html.Div([
-                        html.Span('Niveau : ', style={'fontWeight': '600', 'color': '#bdc3c7'}),
-                        html.Span(str(node_data['Niveau']), style={'color': '#ecf0f1'})
-                    ], style={'marginBottom': '6px'}),
-                    html.Div([
-                        html.Span('Domaine : ', style={'fontWeight': '600', 'color': '#bdc3c7'}),
-                        html.Span(str(node_data['Domaine']), style={'color': '#ecf0f1'})
-                    ], style={'marginBottom': '6px'}),
-                    html.Div([
-                        html.Span('Influence : ', style={'fontWeight': '600', 'color': '#bdc3c7'}),
-                        html.Span(str(node_data['Influence']), style={'color': '#64b5f6'})
-                    ], style={'marginBottom': '6px'}),
-                    html.Div([
-                        html.Span('Interaction : ', style={'fontWeight': '600', 'color': '#bdc3c7'}),
-                        html.Span(str(node_data['Interaction']), style={'color': '#90a4ae'})
-                    ]),
-                ], style={'fontSize': '14px', 'lineHeight': '1.6'})
-            ])
+                        html.Strong(node_label, style={
+                            'fontSize': '18px',
+                            'display': 'block',
+                            'marginBottom': '12px',
+                            'color': '#ecf0f1',
+                            'borderBottom': '2px solid #3498db',
+                            'paddingBottom': '8px'
+                        }),
+                    ])
+                
             
             return content, tooltip_style
         else:
@@ -529,8 +506,9 @@ def update_all_domains(pole1, pole2, pole3, dp1_current, dp2_current, dp3_curren
     return dp1, dp2, dp3, domaines1, domaines2, domaines3
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8051))
-    app.run_server(host="0.0.0.0", port=port, debug=False)
+    #port = int(os.environ.get("PORT", 8051))
+    #app.run_server(host="0.0.0.0", port=port, debug=False)
+    app.run(debug=True, port = 8051)
 
 
 

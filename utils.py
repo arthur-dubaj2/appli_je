@@ -260,14 +260,14 @@ for d in domaine_options:
 
 for p in poles:
      # Pôles : augmentation de la taille pour accommoder le texte, fond semi-transparent
-     df_nodes.loc[len(df_nodes)] = ['rectangle', dicolor_poles[p], 200, p, 'white', 20, p ]
+     df_nodes.loc[len(df_nodes)] = ['rectangle', '#fafbfc', 200, p, dicolor_poles[p], 20, p ]
 
 
 temp_dico = {'Produire' : 0, 'Utiliser' : 0, 'Déployer' : 0}
 
 for dp in domaine_principal_options:
     # Domaines principaux : rectangles arrondis pour meilleure lisibilité
-    df_nodes.loc[len(df_nodes)] = ['roundrectangle', 'white', 180, dp,  dicolor_dp[dp], 18, dp]
+    df_nodes.loc[len(df_nodes)] = ['roundrectangle', 'transparent', 180, dp,  dicolor_dp[dp], 18, dp]
     index = temp_dico[dico_placement[dp]]
     temp_dico[dico_placement[dp]] += 1
     angle = index * 360 / nbr_dom_p_pole[dico_placement[dp]]
@@ -319,7 +319,6 @@ def position(nom, dico_nbr):
         
     elif nom in domaine_principal_options:
         x,y = dico_coord_dp2[nom]
-        print(nom, x, y)
     else:
         dom_princ = df.loc[df['Nom'] == nom, 'Domaine_principal'].iloc[0]
         interaction = df.loc[df['Nom'] == nom, 'Interaction'].iloc[0]
@@ -490,20 +489,18 @@ def generate_stylesheet(df_nodes_param, edges_width):
                 style['border-color'] = row['Couleur']
                 style['border-opacity'] = 1
                 style['text-outline-width'] = 0
-                style['background-opacity'] = 0.95
+                style['background-opacity'] = 0.8
                 style['font-weight'] = '700'
                 style['text-transform'] = 'uppercase'
                 style['letter-spacing'] = '2px'
                 style['shadow-blur'] = 20
                 style['shadow-color'] = row['Couleur']
                 style['shadow-opacity'] = 0.4
+                style['font-size'] = '56'
             elif row['Label'] in domaine_principal_options:  # Domaines principaux
-                style['border-width'] = 2
-                style['border-color'] = row['Label_Couleur']
-                style['border-opacity'] = 0.9
-                style['text-outline-width'] = 0
-                style['background-opacity'] = 0.9
-                style['font-weight'] = '600'
+                style['font-size'] = '30'
+                style['text-transform'] = 'uppercase'
+                
                 
         stylesheet.append({'selector': selector, 'style': style})
     
@@ -524,7 +521,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
         'selector': 'node:hover',
         'style': {
             'border-width': 5,
-            'border-color': '#3498db',
+            'border-color': '#fafbfc',
             'border-opacity': 1,
             'shadow-blur': 25,
             'shadow-color': '#3498db',
@@ -533,7 +530,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
     })
     
     # Style pour les nœuds sélectionnés
-    stylesheet.append({
+    """stylesheet.append({
         'selector': 'node:selected',
         'style': {
             'border-width': 6,
@@ -544,7 +541,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
             'overlay-padding': 8,
             'overlay-opacity': 0.3
         }
-    })
+    })"""
 
     return stylesheet
 

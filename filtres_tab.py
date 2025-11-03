@@ -162,15 +162,7 @@ filtres_tab = dcc.Tab(
                                     id='checklist-Pole1',
                                     options=[{
                                         'label': html.Span([
-                                            html.Div(style={
-                                                'width': '14px',
-                                                'height': '14px',
-                                                'borderRadius': '50%',
-                                                'backgroundColor': utils.dicolor_poles['Produire'],
-                                                'display': 'inline-block',
-                                                'marginRight': '10px',
-                                                'boxShadow': '0 2px 6px rgba(0, 0, 0, 0.2)'
-                                            }),
+                                            
                                             html.Span('PRODUIRE', style={
                                                 'fontWeight': '700',
                                                 'fontSize': '16px',
@@ -188,17 +180,7 @@ filtres_tab = dcc.Tab(
                                     dcc.Checklist(
                                         id='checklist-Domaine_principal_1',
                                         options=[{
-                                            'label': html.Div([
-                                                html.Div(style={
-                                                    'width': '8px',
-                                                    'height': '8px',
-                                                    'borderRadius': '50%',
-                                                    'backgroundColor': utils.dicolor_dp[i],
-                                                    'display': 'inline-block',
-                                                    'marginRight': '8px'
-                                                }),
-                                                html.Span(i)
-                                            ], style={'display': 'flex', 'alignItems': 'center'}),
+                                            'label': html.Span(i, style={'fontSize': '13px'}),
                                             'value': i
                                         } for i in utils.domaine_principal_options_1],
                                         value=utils.domaine_principal_options_1,
@@ -230,15 +212,7 @@ filtres_tab = dcc.Tab(
                                     id='checklist-Pole2',
                                     options=[{
                                         'label': html.Span([
-                                            html.Div(style={
-                                                'width': '14px',
-                                                'height': '14px',
-                                                'borderRadius': '50%',
-                                                'backgroundColor': utils.dicolor_poles['Utiliser'],
-                                                'display': 'inline-block',
-                                                'marginRight': '10px',
-                                                'boxShadow': '0 2px 6px rgba(0, 0, 0, 0.2)'
-                                            }),
+                                            
                                             html.Span('UTILISER', style={
                                                 'fontWeight': '700',
                                                 'fontSize': '16px',
@@ -255,17 +229,7 @@ filtres_tab = dcc.Tab(
                                     dcc.Checklist(
                                         id='checklist-Domaine_principal_2',
                                         options=[{
-                                            'label': html.Div([
-                                                html.Div(style={
-                                                    'width': '8px',
-                                                    'height': '8px',
-                                                    'borderRadius': '50%',
-                                                    'backgroundColor': utils.dicolor_dp[i],
-                                                    'display': 'inline-block',
-                                                    'marginRight': '8px'
-                                                }),
-                                                html.Span(i)
-                                            ], style={'display': 'flex', 'alignItems': 'center'}),
+                                            'label': html.Span(i, style={'fontSize': '13px'}),
                                             'value': i
                                         } for i in utils.domaine_principal_options_2],
                                         value=utils.domaine_principal_options_2,
@@ -296,15 +260,6 @@ filtres_tab = dcc.Tab(
                                     id='checklist-Pole3',
                                     options=[{
                                         'label': html.Span([
-                                            html.Div(style={
-                                                'width': '14px',
-                                                'height': '14px',
-                                                'borderRadius': '50%',
-                                                'backgroundColor': utils.dicolor_poles['Déployer'],
-                                                'display': 'inline-block',
-                                                'marginRight': '10px',
-                                                'boxShadow': '0 2px 6px rgba(0, 0, 0, 0.2)'
-                                            }),
                                             html.Span('DÉPLOYER', style={
                                                 'fontWeight': '700',
                                                 'fontSize': '16px',
@@ -321,17 +276,7 @@ filtres_tab = dcc.Tab(
                                     dcc.Checklist(
                                         id='checklist-Domaine_principal_3',
                                         options=[{
-                                            'label': html.Div([
-                                                html.Div(style={
-                                                    'width': '8px',
-                                                    'height': '8px',
-                                                    'borderRadius': '50%',
-                                                    'backgroundColor': utils.dicolor_dp[i],
-                                                    'display': 'inline-block',
-                                                    'marginRight': '8px'
-                                                }),
-                                                html.Span(i)
-                                            ], style={'display': 'flex', 'alignItems': 'center'}),
+                                            'label': html.Span(i, style={'fontSize': '13px'}),
                                             'value': i
                                         } for i in utils.domaine_principal_options_3],
                                         value=utils.domaine_principal_options_3,
