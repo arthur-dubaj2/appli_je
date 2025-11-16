@@ -487,3 +487,11 @@ body {
 
 
 
+/* Style du bouton sélectionné */
+
+.pole-selected{
+    background-color: #003a91 !important;
+    color: #ffffff !important;
+    border-color: #002b6b !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}

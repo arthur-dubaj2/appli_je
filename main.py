@@ -92,83 +92,67 @@ app.layout = html.Div([
     'paddingTop': '20px'
 })
 
-# Callback pour afficher les informations au survol d'un noeud avec style moderne
-@app.callback(
-    Output('node-info', 'children'),
-    Output('node-info', 'style'),
-    Input('cytoscape', 'mouseoverNodeData')
-)
-def display_node_info(mouseover_data):
-    if mouseover_data:
-        node_id = mouseover_data['id']
-        node_label = mouseover_data['label']
-        
-        # Style de base pour l'info-bulle
-        tooltip_style = {
-            'display': 'block',
-            'position': 'absolute',
-            'top': '0%',
-            'left': '13%',
-            'transform': 'translateX(-50%)',
-            'backgroundColor': 'rgba(44, 62, 80, 0.98)',
-            'color': 'white',
-            'padding': '16px 20px',
-            'borderRadius': '12px',
-            'boxShadow': '0 10px 40px rgba(0, 0, 0, 0.3)',
-            'zIndex': 10000,
-            'minWidth': '280px',
-            'maxWidth': '400px',
-            'backdropFilter': 'blur(10px)',
-            'border': '1px solid rgba(255, 255, 255, 0.1)',
-            'fontFamily': "'Inter', sans-serif"
-        }
-        
-        # Vérifier si c'est un nœud entreprise (dans le dataframe)
-        if node_id in utils.df['Nom'].values:
-            node_data = utils.df[utils.df['Nom'] == node_id].iloc[0]
-            
-            content = html.Div([
-                        html.Strong(node_label, style={
-                            'fontSize': '18px',
-                            'display': 'block',
-                            'marginBottom': '12px',
-                            'color': '#ecf0f1',
-                            'borderBottom': '2px solid #3498db',
-                            'paddingBottom': '8px'
-                        }),
-                    ])
-                
-            
-            return content, tooltip_style
-        else:
-            # Pour les nœuds de structure (pôles, domaines principaux)
-            content = html.Div([
-                html.Strong(node_label, style={
-                    'fontSize': '18px',
-                    'display': 'block',
-                    'color': '#ecf0f1',
-                    'textAlign': 'center'
-                }),
-                html.Div('Cliquez pour zoomer', style={
-                    'fontSize': '12px',
-                    'color': '#95a5a6',
-                    'marginTop': '8px',
-                    'textAlign': 'center',
-                    'fontStyle': 'italic'
-                }) if node_label in utils.domaine_principal_options else None
-            ])
-            
-            return content, tooltip_style
-    else:
-        return "", {'display': 'none'}
+# Callback pour mettre à jour le pôle sélectionné
 
+@app.callback(
+    Output('selected-pole', 'data'),
+    [Input('btn-pole-utiliser', 'n_clicks'),
+     Input('btn-pole-deployer', 'n_clicks'),
+     Input('btn-pole-produire', 'n_clicks')]
+)
+def set_selected_pole(n_innov, n_bus, n_ind):
+    ctx = dash.callback_context
+
+    btn = ctx.triggered[0]['prop_id'].split('.')[0]
+    mapping = {
+        'btn-pole-utiliser': 'Utiliser',
+        'btn-pole-deployer': 'Déployer',
+        'btn-pole-produire': 'Produire',
+        '' : 'Produire'
+    }
+
+    return mapping[btn]
+
+
+# Callaback pour afficher le bouton correspondant au pôle sélectionné en surbrillance
+
+@app.callback(
+[Output('btn-pole-utiliser','className'),
+Output('btn-pole-deployer','className'),
+Output('btn-pole-produire','className')],
+[Input('selected-pole','data')]
+)
+
+def highlight_pole(selected):
+    base = 'pole-btn' # facultatif : classe de base si vous en avez
+    c_utiliser = base + (' pole-selected' if selected == 'Utiliser' else '')
+    c_deployer = base + (' pole-selected' if selected == 'Déployer' else '')
+    c_produire = base + (' pole-selected' if selected == 'Produire' else '')
+    return c_utiliser, c_deployer, c_produire
+
+
+@app.callback(
+    Output("download_xslx", "data"),
+    [Input("btn_xslx", "n_clicks")],
+    prevent_initial_call=True,
+)
+def generate_xlsx(n_nlicks):
+    def to_xlsx(bytes_io):
+        xslx_writer = pd.ExcelWriter(
+            bytes_io, engine="xlsxwriter"
+        )  # requires the xlsxwriter package
+        utils.df.to_excel(xslx_writer, index=False, sheet_name="sheet1")
+        xslx_writer.close()
+
+    return dcc.send_bytes(to_xlsx, "database.xlsx")
 
 # Fonction principale de filtrage des données selon les critères sélectionnés
-def filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon):
+def filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole="Utiliser"):
+
 
     
     domaine_principal2 = [x for x in domaine_principal if utils.dico_placement[x] in poles]
-        
+    
 
     # Filtrer le dataframe en fonction des valeurs sélectionnées
     filtered_df = utils.df[
@@ -176,15 +160,20 @@ def filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon
         (utils.df['Domaine_principal'].isin(domaine_principal2)) &
         (utils.df['Domaine'].isin(domaine)) &
         (utils.df['Nature'].isin(nature)) &
-        (utils.df['Doublon'].isin(doublon))
+        (utils.df['Doublon'].isin(doublon))&
+        (utils.df['Pole'] == selected_pole)
+
     ]
 
     node_liste = list(np.concatenate((filtered_df['Nom'].values, utils.base_liste)))
 
     for dp in utils.domaine_principal_options:
-        if utils.dico_placement[dp] not in poles:
+        if utils.dico_placement[dp] not in poles or utils.dico_placement[dp] != selected_pole:
             node_liste.remove(dp)
 
+    for pole in utils.poles:
+        if pole != selected_pole:
+            node_liste.remove(pole)
 
     node_liste = np.array(node_liste)
 
@@ -221,8 +210,8 @@ def filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon
 
 #fonction appliquée dans le callback suivant pour appliquer le "zoom" avec la fonction genere_sous_graphe
 
-def callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon):
-    elements, node_liste =   filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon)
+def callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole="Utiliser"):
+    elements, node_liste =   filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
     elements2 = utils.genere_sous_graphe(data['id'], node_liste, domaine)
     return elements2
 
@@ -287,7 +276,8 @@ def update_store(tap_node_data, current_data):
     Input('stored-elements', 'data'),
     Input('stored-data-table', 'data'),
     Input('zoom-flag', 'data'),
-    Input('add-node-btn', 'n_clicks') 
+    Input('add-node-btn', 'n_clicks'), 
+    Input('selected-pole', 'data')
     ],
     [State('node-nom', 'value'),
     State('node-niveau', 'value'),
@@ -304,7 +294,7 @@ def update_store(tap_node_data, current_data):
 
 
 def update_cytoscape_table(tab,niveau, domaine_principal1,  domaine_principal2,  domaine_principal3, domaine1 , domaine2, domaine3, poles1, poles2, poles3, nature, doublon,
-                        layout, stored_data,stored_elements,data_table,zoom_flag, n_clicks,nom, niveau_val, pole_val, dp_val, domaine_val, nature_val, influence_val, interaction_val, doublon_val, acronyme_val,
+                        layout, stored_data,stored_elements,data_table,zoom_flag, n_clicks, selected_pole,nom, niveau_val, pole_val, dp_val, domaine_val, nature_val, influence_val, interaction_val, doublon_val, acronyme_val,
                         elements):
     
 
@@ -323,7 +313,6 @@ def update_cytoscape_table(tab,niveau, domaine_principal1,  domaine_principal2, 
     edges_width = 0
     data = stored_elements
 
-        
 
 
 
@@ -332,11 +321,11 @@ def update_cytoscape_table(tab,niveau, domaine_principal1,  domaine_principal2, 
         
         if stored_data['id'] in utils.domaine_principal_options :
             if not(zoom_flag):
-                elements = callback_sous_graphe(stored_data, niveau, domaine_principal, domaine, poles, nature, doublon)
+                elements = callback_sous_graphe(stored_data, niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
                 edges_width = 0.5
                 zoom_flag = True
             else:
-                elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon)
+                elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
                 zoom_flag = False
                 stored_data_clean = True
 
@@ -350,10 +339,10 @@ def update_cytoscape_table(tab,niveau, domaine_principal1,  domaine_principal2, 
 
             stored_data_clean = True
             if zoom_flag:
-                elements = callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon)
+                elements = callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
                 edges_width = 0.5
             else:
-                elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon)
+                elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
             node_id = stored_data['id']
             table_data = utils.df[utils.df['Nom'] == node_id].iloc[:, :11].to_dict('records')
             return elements, table_data, layout, stored_data_clean, utils.generate_stylesheet( utils.df_nodes, edges_width),  stored_elements, table_data, zoom_flag
@@ -424,10 +413,10 @@ def update_cytoscape_table(tab,niveau, domaine_principal1,  domaine_principal2, 
         utils.df_nodes.loc[len(utils.df_nodes)] = ligne
 
         if zoom_flag:
-            elements = callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon)
+            elements = callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
             edges_width = 0.5
         else:
-            elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon)
+            elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
 
         
 
@@ -435,15 +424,14 @@ def update_cytoscape_table(tab,niveau, domaine_principal1,  domaine_principal2, 
 
 
     if zoom_flag:
-        elements = callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon)
+        elements = callback_sous_graphe(data, niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
         edges_width = 0.5
     else:
-        elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon)
+        elements, _ = filtres_callbacks(niveau, domaine_principal, domaine, poles, nature, doublon, selected_pole)
 
 
     
     return elements, table_data, layout, True, utils.generate_stylesheet(utils.df_nodes, edges_width), stored_elements, data_table, zoom_flag
-
 # Dépendances dans les filtres selon la hiérarchie
 @app.callback(
     [Output('checklist-Domaine_principal_1', 'value'),

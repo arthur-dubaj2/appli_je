@@ -25,7 +25,7 @@ def generate_random_color():
 
 #Importation de la bdd
 
-df = pd.read_excel('database2.xlsx')
+df = pd.read_excel('database.xlsx')
 df.columns = ['Nom','Acronyme', 'Niveau', 'Pole', 'Domaine_principal','Domaine',  'Nature', 'Influence', 'Interaction', 'Doublon', 'Commentaires', 'Site',1,2]
 # Correction du FutureWarning : conversion explicite avant fillna
 for col in df.columns:
@@ -178,7 +178,7 @@ dico_angles_entr = dico_nbr_dom.copy()
 
 #Création d'un dictionnaire stockant les coordonnées de chaque domaine
 
-dico_coord_poles = {'Produire' : (650,-400), 'Déployer' : (0, 500), 'Utiliser' : (-900,-400)}
+dico_coord_poles = {'Produire' : (1000,1000), 'Déployer' : (1000, 1000), 'Utiliser' : (1000,1000)}
 
 #Création de la DF df_nodes stockant les paramètres graphiques de chaque noeud
 
@@ -191,7 +191,7 @@ for row in df.itertuples():
 
     shape = forme_dico[row.Niveau]
     couleur = couleur_dico[row.Nature]
-    taille = row.Influence * 8
+    
     acronyme = df.loc[df['Nom'] == row.Nom, 'Acronyme'].iloc[0]
 
     if row.Doublon == "Doublon positif":
@@ -203,6 +203,7 @@ for row in df.itertuples():
 
     if row.Influence != 'nan':
         label_size = str(int(row.Influence) * 3 + 10)
+        taille = str(10 + int(row.Influence) * 6)
     else:
         label_size = 15
     ligne = [ shape, couleur, taille, acronyme, l_color, label_size]
@@ -281,7 +282,7 @@ df_nodes.loc[len(df_nodes)] = ['ellipse',dicolor_poles['Produire'], 75, 'IM', 'r
 
 
 
-dico_coord_dp2 = {
+"""dico_coord_dp2 = {
     'Décarbonation' : (-400.0, -400.0),
     'Energie' : (1550.0, -400.0),
     'Industrie' : (-900.0, 100.0),
@@ -296,7 +297,7 @@ dico_coord_dp2 = {
 
 dicoeff = {
     'Décarbonation' : 1,
-    'Energie' : 3.5,
+    'Energie' : 2.0,
     'Industrie' : 1,
     'Métaux' : 1,
     'Transport' : 1.9,
@@ -305,11 +306,53 @@ dicoeff = {
     'Support' : 1,
     'Test' : 1
 
-}
+}"""
+
+# Le dictionnaire suivant prédéfinit 8 coordonnées différents pour chaque pôle  
 
 #Fonction calculant la position de chaque noeud
+dico_coord_dp2 = {
+    '8' : (-1100.0, -400.0),  #8
+    '4' : (-1250.0, 475.0),   #4
+    '5' : (-500.0, 250.0),    #5
+    '6' : (0.0, -350.0),      #6
+    '1' : (250.0, 250.0),       #1
+    '7' : (1150.0, 0.0),      #7
+    '3' : (550.0, 650.0),     #3
+    '2' : (775.0, -675.0)     #2
+}
+
+dicoeff = {
+    '8' : 3.0,
+    '4' : 1.3,
+    '5' : 1.9, 
+    '6' : 2.1, 
+    '1' : 1.0,
+    '7' : 2.7,
+    '3' : 1.2, 
+    '2' : 1.0
+}
 
 
+# On inverse le dictionnaire dico_placement
+
+d_setup_poles = {}
+
+for p in poles:
+    d_setup_poles[p] = []
+
+for d in domaine_principal_options:
+    p = dico_placement[d]
+    d_setup_poles[p].append(d)
+    
+for p in poles:
+    d_setup_poles[p] = sorted(d_setup_poles[p], key = lambda x: dico_nbr_dom[x], reverse= True)
+
+def give_index(nom, dico_setup):
+    p = dico_placement[nom]
+    index = dico_setup[p].index(nom)
+    return str(9 - (index + 1))
+    
 
 def position(nom, dico_nbr):
 
@@ -318,14 +361,16 @@ def position(nom, dico_nbr):
         x,y = dico_coord_poles[nom]
         
     elif nom in domaine_principal_options:
-        x,y = dico_coord_dp2[nom]
+        x,y = dico_coord_dp2[give_index(nom, d_setup_poles)]
+        print(f'Domaine principal {nom}, index : {give_index(nom, d_setup_poles)}')
     else:
         dom_princ = df.loc[df['Nom'] == nom, 'Domaine_principal'].iloc[0]
+        index = give_index(dom_princ, d_setup_poles)
         interaction = df.loc[df['Nom'] == nom, 'Interaction'].iloc[0]
         dico_angles_entr[dom_princ] += 1 
         angle = dico_angles_entr[dom_princ] * 360 / dico_nbr[dom_princ]
-        rayon = 35 * (5 - interaction) * dicoeff[dom_princ]
-        x0, y0 = dico_coord_dp2[dom_princ]
+        rayon = 35 * (5 - interaction) * dicoeff[str(index)]
+        x0, y0 = dico_coord_dp2[str(index)]
         x = x0 + np.cos(np.radians(angle)) * rayon
         y = y0 + np.sin(np.radians(angle)) * rayon
 
@@ -466,6 +511,8 @@ def generate_stylesheet(df_nodes_param, edges_width):
                 except:
                     pass
             
+            
+
             if node_doublon_status == 'Doublon positif':
                 style['border-width'] = 4
                 style['border-color'] = 'rgb(0, 255, 0)'
@@ -489,7 +536,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
                 style['border-color'] = row['Couleur']
                 style['border-opacity'] = 1
                 style['text-outline-width'] = 0
-                style['background-opacity'] = 0.8
+                style['background-opacity'] = 0
                 style['font-weight'] = '700'
                 style['text-transform'] = 'uppercase'
                 style['letter-spacing'] = '2px'
@@ -497,6 +544,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
                 style['shadow-color'] = row['Couleur']
                 style['shadow-opacity'] = 0.4
                 style['font-size'] = '56'
+                style['label'] = ''
             elif row['Label'] in domaine_principal_options:  # Domaines principaux
                 style['font-size'] = '30'
                 style['text-transform'] = 'uppercase'
@@ -517,7 +565,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
     })
     
     # Style pour les nœuds au survol
-    stylesheet.append({
+    """stylesheet.append({
         'selector': 'node:hover',
         'style': {
             'border-width': 5,
@@ -527,7 +575,7 @@ def generate_stylesheet(df_nodes_param, edges_width):
             'shadow-color': '#3498db',
             'shadow-opacity': 0.7
         }
-    })
+    })"""
     
     # Style pour les nœuds sélectionnés
     """stylesheet.append({

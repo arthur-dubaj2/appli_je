@@ -28,7 +28,7 @@ graph_container_style = {
 # Style amélioré pour le graphe Cytoscape - Hauteur réduite
 cytoscape_style = {
     'width': '100%',
-    'height': '650px',
+    'height': '850px',
     'backgroundColor': '#fafbfc',
     'borderRadius': '15px',
     'border': '2px solid #e1e4e8'
@@ -150,6 +150,53 @@ button_style = {
     'textTransform': 'uppercase'
 }
 
+button_pole = {
+    'background': '#f8f9fa',
+    'color': 'black',
+    'padding': '12px 28px',
+    'border': 'none',
+    'borderRadius': '4px',
+    'cursor': 'pointer',
+    'fontSize': '18px',
+    'fontWeight': '600',
+    'marginTop': '20px',
+    'transition': 'all 0.3s ease',
+    'boxShadow': '0 2px 8px rgba(136, 192, 0, 0.3)',
+    'letterSpacing': '0.5px',
+    'textTransform': 'uppercase',
+    'margin' : '0 20px'
+}
+
+#Style pour le bouton d'export excel
+
+export_container_style = {
+    'backgroundColor': 'white',
+    'padding': '80px',
+    'borderRadius': '20px',
+    'boxShadow': '0 10px 40px rgba(0, 0, 0, 0.08)',
+    'border': '1px solid rgba(0, 0, 0, 0.05)',
+    'margin' : 'auto'
+}
+
+button_export = {
+    
+    'background': '#f8f9fa',
+    'color': 'black',
+    'padding': '12px 28px',
+    'border': 'none',
+    'borderRadius': '4px',
+    'cursor': 'pointer',
+    'fontSize': '18px',
+    'fontWeight': '600',
+    'marginTop': '20px',
+    'transition': 'all 0.3s ease',
+    'boxShadow': '0 2px 8px rgba(136, 192, 0, 0.3)',
+    'letterSpacing': '0.5px',
+    'textTransform': 'uppercase',
+    'margin' : '0 20px'
+}
+
+
 main_tab = dcc.Tab(
     label='Graphe et données',
     value='onglet2',
@@ -167,37 +214,33 @@ main_tab = dcc.Tab(
     },
     children=[
         html.Div([
-            # En-tête avec titre
-            html.Div([
-                html.H1('Cartographie de l\'écosystème hydrogène', style={
-                    'color': '#003a91',
-                    'fontSize': '28px',
-                    'fontWeight': '700',
-                    'margin': '0 0 10px 0',
-                    'letterSpacing': '0.5px'
-                }),
-                html.P('Visualisation interactive des parties prenantes', style={
-                    'color': '#666',
-                    'fontSize': '14px',
-                    'margin': '0 0 20px 0',
-                    'fontWeight': '400'
-                })
-            ], style={'textAlign': 'center', 'marginBottom': '20px'}),
+            
 
             # Conteneur principal : Graphe + Légende
             html.Div([
-                # Conteneur du graphe
                 html.Div([
+                    # Buttons to choose pole
+                    html.Div([
+                        html.Button('Pôle Production', id='btn-pole-produire', n_clicks=0,
+                                    style=button_pole),
+                        html.Button('Pôle Déploiement', id='btn-pole-deployer', n_clicks=0,
+                                    style=button_pole),
+                        html.Button('Pôle Utilisation', id='btn-pole-utiliser', n_clicks=0,
+                                    style=button_pole)
+                    ], style={'display': 'flex', 'justifyContent': 'center', 'marginBottom': '12px'}),
+
+                    # store to keep current selected pole
+                    dcc.Store(id='selected-pole'),
+
+                    # Single Cytoscape that will be filtered by the store value
                     cyto.Cytoscape(
                         id='cytoscape',
-                        elements=utils.nodes + utils.edges,
+                        elements=[e for e in utils.nodes + utils.edges],  # default full set; callback will replace
                         layout={'name': 'preset'},
                         style=cytoscape_style,
                         tapNodeData={'id': 'id'},
                         stylesheet=utils.generate_stylesheet(utils.df_nodes, 0)
                     ),
-                    # Info-bulle pour le survol
-                    html.Div(id='node-info', style=tooltip_style),
                 ], style={**graph_container_style, 'flex': '1', 'marginRight': '20px'}),
 
                 # Légende
@@ -241,83 +284,89 @@ main_tab = dcc.Tab(
                 ),
             ], style=table_container_style),
 
-            # Formulaire d'ajout de nœud
+            # Formulaire d'ajout de nœud + bouton d'export
             html.Div([
-                html.H3('Ajouter une nouvelle organisation', style=form_title_style),
                 html.Div([
-                    dcc.Input(
-                        id='node-nom',
-                        placeholder='Nom de l\'organisation',
-                        style=input_style
+                    html.H3('Ajouter une nouvelle organisation', style=form_title_style),
+                    html.Div([
+                        dcc.Input(
+                            id='node-nom',
+                            placeholder='Nom de l\'organisation',
+                            style=input_style
+                        ),
+                        dcc.Dropdown(
+                            searchable=False,
+                            id='node-niveau',
+                            options=[{'label': n, 'value': n} for n in utils.df['Niveau'].unique()],
+                            placeholder='Niveau',
+                            style=dropdown_style
+                        ),
+                        dcc.Dropdown(
+                            searchable=False,
+                            id='node-pole',
+                            options=[{'label': n, 'value': n} for n in utils.df['Pole'].unique()],
+                            placeholder='Pôle',
+                            style=dropdown_style
+                        ),
+                        dcc.Dropdown(
+                            id='node-domaine_principal',
+                            options=[{'label': n, 'value': n} for n in utils.df['Domaine_principal'].unique()],
+                            placeholder='Domaine principal',
+                            style=dropdown_style
+                        ),
+                        dcc.Dropdown(
+                            id='node-domaine',
+                            options=[{'label': n, 'value': n} for n in utils.df['Domaine'].unique()],
+                            placeholder='Domaine',
+                            style={**dropdown_style, 'width': '300px'}
+                        ),
+                        dcc.Dropdown(
+                            searchable=False,
+                            id='node-nature',
+                            options=[{'label': n, 'value': n} for n in utils.df['Nature'].unique()],
+                            placeholder='Nature',
+                            style=dropdown_style
+                        ),
+                    ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'marginBottom': '15px'}),
+                    html.Div([
+                        dcc.Dropdown(
+                            searchable=False,
+                            id='node-influence',
+                            options=[{'label': n, 'value': n} for n in utils.df['Influence'].unique()],
+                            placeholder='Influence',
+                            style=dropdown_style
+                        ),
+                        dcc.Dropdown(
+                            searchable=False,
+                            id='node-interaction',
+                            options=[{'label': n, 'value': n} for n in utils.df['Interaction'].unique()],
+                            placeholder='Interaction',
+                            style=dropdown_style
+                        ),
+                        dcc.Dropdown(
+                            searchable=False,
+                            id='node-doublon',
+                            options=[{'label': n, 'value': n} for n in utils.df['Doublon'].unique()],
+                            placeholder='Doublon',
+                            style=dropdown_style
+                        ),
+                        dcc.Input(
+                            id='node-acronyme',
+                            placeholder='Acronyme',
+                            style=input_style
+                        ),
+                    ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center'}),
+                    html.Button(
+                        'Ajouter l\'organisation',
+                        id='add-node-btn',
+                        style=button_style,
+                        className='add-button'
                     ),
-                    dcc.Dropdown(
-                        searchable=False,
-                        id='node-niveau',
-                        options=[{'label': n, 'value': n} for n in utils.df['Niveau'].unique()],
-                        placeholder='Niveau',
-                        style=dropdown_style
-                    ),
-                    dcc.Dropdown(
-                        searchable=False,
-                        id='node-pole',
-                        options=[{'label': n, 'value': n} for n in utils.df['Pole'].unique()],
-                        placeholder='Pôle',
-                        style=dropdown_style
-                    ),
-                    dcc.Dropdown(
-                        id='node-domaine_principal',
-                        options=[{'label': n, 'value': n} for n in utils.df['Domaine_principal'].unique()],
-                        placeholder='Domaine principal',
-                        style=dropdown_style
-                    ),
-                    dcc.Dropdown(
-                        id='node-domaine',
-                        options=[{'label': n, 'value': n} for n in utils.df['Domaine'].unique()],
-                        placeholder='Domaine',
-                        style={**dropdown_style, 'width': '300px'}
-                    ),
-                    dcc.Dropdown(
-                        searchable=False,
-                        id='node-nature',
-                        options=[{'label': n, 'value': n} for n in utils.df['Nature'].unique()],
-                        placeholder='Nature',
-                        style=dropdown_style
-                    ),
-                ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'marginBottom': '15px'}),
-                html.Div([
-                    dcc.Dropdown(
-                        searchable=False,
-                        id='node-influence',
-                        options=[{'label': n, 'value': n} for n in utils.df['Influence'].unique()],
-                        placeholder='Influence',
-                        style=dropdown_style
-                    ),
-                    dcc.Dropdown(
-                        searchable=False,
-                        id='node-interaction',
-                        options=[{'label': n, 'value': n} for n in utils.df['Interaction'].unique()],
-                        placeholder='Interaction',
-                        style=dropdown_style
-                    ),
-                    dcc.Dropdown(
-                        searchable=False,
-                        id='node-doublon',
-                        options=[{'label': n, 'value': n} for n in utils.df['Doublon'].unique()],
-                        placeholder='Doublon',
-                        style=dropdown_style
-                    ),
-                    dcc.Input(
-                        id='node-acronyme',
-                        placeholder='Acronyme',
-                        style=input_style
-                    ),
-                ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center'}),
-                html.Button(
-                    'Ajouter l\'organisation',
-                    id='add-node-btn',
-                    style=button_style,
-                    className='add-button'
+                ], style=form_container_style),
+                html.Div(
+                    [html.Img(src='/assets/logo_xlsx.png', id = 'logo_excel', style={'width': '80px', 'marginBottom': '10px', 'margin' : 'auto', 'display' : 'block'}),
+                    html.Div([html.Button("Download xlsx", id="btn_xslx", style = button_export), dcc.Download(id="download_xslx")])], style=export_container_style
                 ),
-            ], style=form_container_style),
+            ], style={'display': 'flex', 'justifyContent': 'space-between'}),
         ], style=main_container_style)
     ])
